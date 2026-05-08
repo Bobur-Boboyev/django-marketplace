@@ -49,3 +49,11 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+    @property
+    def is_vendor(self):
+        return self.role == 'vendor'
+
+    @property
+    def is_customer(self):
+        return self.role == 'customer'
