@@ -55,7 +55,10 @@ INSTALLED_APPS = [
     'apps.reviews',
     'apps.notifications',
     'apps.core',
+
     'rest_framework',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
@@ -147,14 +150,17 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
+    'DeFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=env("expire_minutes")),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=env("expire_days")),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(env("expire_minutes"))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(env("expire_days"))),
 
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,

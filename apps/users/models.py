@@ -31,7 +31,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     phone = models.CharField(max_length=20, blank=True, null=True)
 
     ROLE_CHOICES = (
-        ('admin', 'Admin'),
         ('vendor', 'Vendor'),
         ('customer', 'Customer'),
     )
