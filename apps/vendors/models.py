@@ -21,7 +21,7 @@ class Vendor(models.Model):
         related_name="vendors"
     )
 
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     slug = models.SlugField(unique=True)
 
     description = models.TextField(blank=True)
