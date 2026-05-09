@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import Vendor
+
+@admin.register(Vendor)
+class VendorAdmin(admin.ModelAdmin):
+    list_display = ("name", "email", "vendor_type", "status")
+    list_filter = ("vendor_type", "status")
+    search_fields = ("name", "email")

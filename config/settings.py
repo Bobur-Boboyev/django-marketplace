@@ -172,3 +172,6 @@ SIMPLE_JWT = {
 
     "JTI_CLAIM": "jti",
 }
+
+Media_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
