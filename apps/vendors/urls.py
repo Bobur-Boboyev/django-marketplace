@@ -1,7 +1,8 @@
-from django.urls import path
-from .views import VendorListCreateView, VendorDetailAPIView
+from rest_framework.routers import DefaultRouter
+from .views import VendorViewSet
 
-urlpatterns = [
-    path('', VendorListCreateView.as_view(), name='vendor-list-create'),
-    path('<int:pk>/', VendorDetailAPIView.as_view(), name='vendor-detail'),
-]
+
+router = DefaultRouter()
+router.register(r"vendors", VendorViewSet, basename="vendor")
+
+urlpatterns = router.urls
