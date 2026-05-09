@@ -8,15 +8,11 @@ class UserSerializer(serializers.Serializer):
     email = serializers.EmailField(
         validators=[UniqueValidator(queryset=User.objects.all(), message="Email already exists.")]
     )
-    ROLE_CHOICES = (
-        ('vendor', 'Vendor'),
-        ('customer', 'Customer'),
-    )
-    role = serializers.ChoiceField(choices=ROLE_CHOICES, default='customer')
     first_name = serializers.CharField(required=False, allow_blank=True)
     last_name = serializers.CharField(required=False, allow_blank=True)
     phone = serializers.CharField(required=False, allow_blank=True)
     password = serializers.CharField(write_only=True)
+    role = serializers.CharField(read_only=True)
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)

@@ -7,7 +7,7 @@ class VendorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Vendor
         fields = "__all__"
-        read_only_fields = ("id", "slug", "is_active", "created_at", "updated_at", "status", "user", "is_verified", "is_featured")
+        read_only_fields = ("id", "slug", "is_active", "created_at", "updated_at", "status", "user", "is_verified", "is_featured", "rating")
 
     def create(self, validated_data):
         base_slug = slugify(validated_data['name'])
