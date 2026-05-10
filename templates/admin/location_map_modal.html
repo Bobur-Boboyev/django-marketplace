@@ -1,0 +1,150 @@
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+#mapModal {
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.6);
+    z-index:99999;
+}
+
+#box {
+    width:80%;
+    height:80%;
+    margin:5% auto;
+    background:#fff;
+    border-radius:10px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+}
+
+#map {
+    flex:1;
+    width:100%;
+    height:100%;
+    min-height:400px;
+}
+
+#footer {
+    padding:10px;
+    display:flex;
+    justify-content:flex-end;
+    gap:10px;
+    border-top:1px solid #ddd;
+}
+
+.btn {
+    padding:8px 14px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.cancel { background:#6c757d; color:white; }
+.save { background:#0d6efd; color:white; }
+</style>
+
+
+<!-- MODAL -->
+<div id="mapModal">
+    <div id="box">
+        <div id="map"></div>
+
+        <div id="footer">
+            <button type="button" class="btn cancel" id="cancelMap">Cancel</button>
+            <button type="button" class="btn save" id="saveMap">Save</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let map = null;
+let marker = null;
+
+let tempLat = 41.3111;
+let tempLng = 69.2797;
+
+function initMap() {
+
+    const latField = document.getElementById("id_latitude");
+    const lngField = document.getElementById("id_longitude");
+
+    tempLat = parseFloat(latField?.value || 41.3111);
+    tempLng = parseFloat(lngField?.value || 69.2797);
+
+    map = L.map("map").setView([tempLat, tempLng], 10);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap"
+    }).addTo(map);
+
+    marker = L.marker([tempLat, tempLng], { draggable: true }).addTo(map);
+
+    function update(latlng){
+        tempLat = latlng.lat;
+        tempLng = latlng.lng;
+    }
+
+    map.on("click", function(e){
+        marker.setLatLng(e.latlng);
+        update(e.latlng);
+    });
+
+    marker.on("dragend", function(e){
+        update(e.target.getLatLng());
+    });
+
+    setTimeout(() => {
+        map.invalidateSize(); // 🔥 CRITICAL FIX
+    }, 100);
+}
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    const modal = document.getElementById("mapModal");
+    const latField = document.getElementById("id_latitude");
+    const lngField = document.getElementById("id_longitude");
+
+    document.addEventListener("click", function(e){
+
+        // OPEN MAP
+        if(e.target.closest("#openMapBtn")){
+            modal.style.display = "block";
+
+            setTimeout(() => {
+                if(!map){
+                    initMap();
+                } else {
+                    map.invalidateSize();
+                }
+            }, 200);
+        }
+
+        // CANCEL (NO SAVE)
+        if(e.target.closest("#cancelMap")){
+            modal.style.display = "none";
+        }
+
+        // SAVE (UPDATE FORM ONLY)
+        if(e.target.closest("#saveMap")){
+
+        // latitude input update
+        if(latField){
+            latField.value = tempLat.toFixed(6);
+        }
+
+        // longitude input update
+        if(lngField){
+            lngField.value = tempLng.toFixed(6);
+        }
+
+        // modal close
+        modal.style.display = "none";
+    }
+    });
+
+});
+</script>
