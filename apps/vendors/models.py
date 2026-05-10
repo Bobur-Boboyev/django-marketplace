@@ -13,6 +13,7 @@ class Vendor(models.Model):
     class Status(models.TextChoices):
         PENDING = "pending", "Pending"
         ACTIVE = "active", "Active"
+        REJECTED = "rejected", "Rejected"
         BLOCKED = "blocked", "Blocked"
 
     user = models.ForeignKey(
@@ -88,7 +89,6 @@ class Vendor(models.Model):
         blank=True
     )
 
-    is_verified = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
     is_active = models.BooleanField(default=True)
     is_deleted = models.BooleanField(default=False)
@@ -111,3 +111,23 @@ class Vendor(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def approve(self):
+        self.status = Vendor.Status.ACTIVE
+        self.save()
+
+    def reject(self):
+        self.status = Vendor.Status.REJECTED
+        self.save()
+
+    def block(self):
+        self.status = Vendor.Status.BLOCKED
+        self.save()
+    
+    def activate(self):
+        self.is_active = True
+        self.save()
+
+    def deactivate(self):
+        self.is_active = False
+        self.save()

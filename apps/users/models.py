@@ -57,3 +57,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_customer(self):
         return self.role == 'customer'
+    
+    def have_vendors(self):
+        return self.vendors.filter(status='active').exists()

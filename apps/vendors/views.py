@@ -1,7 +1,7 @@
 from rest_framework.views import APIView, Http404
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
@@ -24,6 +24,8 @@ class VendorViewSet(ModelViewSet):
     def get_permissions(self):
         if self.action in ["update", "partial_update", "destroy", "location", "upload_logo", "upload_banner", "status"]:
             return [IsAuthenticated(), IsVendorOwner()]
+        if self.action in ["approve", "reject"]:
+            return [IsAuthenticated(), IsAdminUser()]
         return [IsAuthenticated()]
     
     @action(detail=True, methods=["patch"])
@@ -74,16 +76,56 @@ class VendorViewSet(ModelViewSet):
         })
     
     @action(detail=True, methods=["patch"])
-    def status(self, request, pk=None):
+    def activate(self, request, pk=None):
         vendor = self.get_object()
 
-        serializer = VendorStatusSerializer(data=request.data)
-        if serializer.is_valid():
-            vendor.is_active = serializer.validated_data['is_active']
-            vendor.save()
+        vendor.activate()
 
-            return Response({
-                "message": "Vendor status updated",
-                "is_active": vendor.is_active
-            })
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({
+            "message": "Vendor activated",
+            "is_active": vendor.is_active
+        })
+    
+    @action(detail=True, methods=["patch"])
+    def deactivate(self, request, pk=None):
+        vendor = self.get_object()
+
+        vendor.deactivate()
+
+        return Response({
+            "message": "Vendor deactivated",
+            "is_active": vendor.is_active
+        })
+    
+    @action(detail=True, methods=["patch"])
+    def approve(self, request, pk=None):
+        vendor = self.get_object()
+
+        vendor.approve()
+        user = vendor.user
+        user.role = "vendor"
+        user.save()
+
+        return Response({
+            "message": "Vendor approved",
+            "status": vendor.status
+        })
+    
+    @action(detail=True, methods=["patch"])
+    def reject(self, request, pk=None):
+        vendor = self.get_object()
+
+        vendor.reject()
+
+        user = vendor.user
+        if user.have_vendors():
+            user.role = "vendor"
+        else:
+            user.role = "customer"
+        
+        user.save()
+
+        return Response({
+            "message": "Vendor rejected",
+            "status": vendor.status
+        })
