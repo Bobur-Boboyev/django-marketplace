@@ -1,0 +1,150 @@
+<style>
+.vendor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.vendor-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 12px 14px;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    background: #fff;
+
+    transition: 0.2s ease;
+}
+
+.vendor-item:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+}
+
+/* LEFT */
+.vendor-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.vendor-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #f3f3f3;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+}
+
+.vendor-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.vendor-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #111;
+}
+
+.vendor-email {
+    font-size: 12px;
+    color: #777;
+}
+
+/* STATUS */
+.status {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 999px;
+    text-transform: uppercase;
+}
+
+/* STATUS COLORS */
+.status.active {
+    background: #e7f9ee;
+    color: #198754;
+}
+
+.status.pending {
+    background: #fff6dd;
+    color: #b78103;
+}
+
+.status.rejected {
+    background: #fdecec;
+    color: #dc3545;
+}
+
+.status.blocked {
+    background: #e9ecef;
+    color: #343a40;
+}
+</style>
+
+{% if vendors %}
+
+<div class="vendor-list">
+
+    {% for vendor in vendors %}
+
+    <a href="/admin/vendors/vendor/{{ vendor.id }}/change/"
+       style="text-decoration:none; color:inherit;">
+
+        <div class="vendor-item">
+
+            <!-- LEFT -->
+            <div class="vendor-left">
+
+                <div class="vendor-avatar">
+                    {% if vendor.logo %}
+                        <img src="{{ vendor.logo.url }}">
+                    {% else %}
+                        {{ vendor.name|slice:":1"|upper }}
+                    {% endif %}
+                </div>
+
+                <div>
+                    <div class="vendor-name">
+                        {{ vendor.name }}
+                    </div>
+
+                    <div class="vendor-email">
+                        {{ vendor.email }}
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RIGHT -->
+            <div class="status {{ vendor.status }}">
+                {{ vendor.status|upper }}
+            </div>
+
+        </div>
+
+    </a>
+
+    {% endfor %}
+
+</div>
+
+{% else %}
+
+<div style="color:#777; padding:10px;">
+    No vendors found
+</div>
+
+{% endif %}

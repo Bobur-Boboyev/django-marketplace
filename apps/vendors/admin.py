@@ -145,7 +145,7 @@ class VendorAdmin(admin.ModelAdmin):
         return format_html(
             '<button type="button" id="openMapBtn" style="padding:8px 12px;'
             'background:#0d6efd;color:white;border:none;border-radius:6px;cursor:pointer;">'
-            'Select Location</button>'
+            'Location</button>'
         )
 
     location_button.short_description = "Location Picker"
