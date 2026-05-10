@@ -14,18 +14,28 @@ from .serializers import VendorSerializer, LocationSerializer, LogoUploadSeriali
 
 
 class VendorViewSet(ModelViewSet):
-    queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
     permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+
+        user = self.request.user
+
+        if user.is_staff:
+            return Vendor.objects.all()
+        
+        return Vendor.objects.filter(status=Vendor.Status.ACTIVE)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
     def get_permissions(self):
-        if self.action in ["update", "partial_update", "destroy", "location", "upload_logo", "upload_banner", "status"]:
+        if self.action in ["update", "partial_update", "destroy", "location", "upload_logo", "upload_banner", "status", "activate", "deactivate"]:
             return [IsAuthenticated(), IsVendorOwner()]
-        if self.action in ["approve", "reject"]:
+        
+        if self.action in ["approve", "reject", "pending"]:
             return [IsAuthenticated(), IsAdminUser()]
+        
         return [IsAuthenticated()]
     
     @action(detail=True, methods=["patch"])
@@ -129,3 +139,9 @@ class VendorViewSet(ModelViewSet):
             "message": "Vendor rejected",
             "status": vendor.status
         })
+    
+    @action(detail=False, methods=["get"])
+    def pending(self, request):
+        pending_vendors = Vendor.objects.filter(status=Vendor.Status.PENDING)
+        serializer = self.get_serializer(pending_vendors, many=True)
+        return Response(serializer.data)
