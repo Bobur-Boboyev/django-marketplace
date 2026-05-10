@@ -30,12 +30,6 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     phone = models.CharField(max_length=20, blank=True, null=True)
 
-    ROLE_CHOICES = (
-        ('vendor', 'Vendor'),
-        ('customer', 'Customer'),
-    )
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='customer')
-
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
@@ -52,11 +46,8 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     @property
     def is_vendor(self):
-        return self.role == 'vendor'
+        return self.vendors.filter(status="active").exists()
 
     @property
     def is_customer(self):
-        return self.role == 'customer'
-    
-    def have_vendors(self):
-        return self.vendors.filter(status='active').exists()
+        return not self.is_vendor

@@ -112,9 +112,6 @@ class VendorViewSet(ModelViewSet):
         vendor = self.get_object()
 
         vendor.approve()
-        user = vendor.user
-        user.role = "vendor"
-        user.save()
 
         return Response({
             "message": "Vendor approved",
@@ -126,14 +123,6 @@ class VendorViewSet(ModelViewSet):
         vendor = self.get_object()
 
         vendor.reject()
-
-        user = vendor.user
-        if user.have_vendors():
-            user.role = "vendor"
-        else:
-            user.role = "customer"
-        
-        user.save()
 
         return Response({
             "message": "Vendor rejected",

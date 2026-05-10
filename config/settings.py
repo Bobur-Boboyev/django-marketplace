@@ -39,6 +39,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -175,3 +177,20 @@ SIMPLE_JWT = {
 
 Media_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Marketify Admin",
+    "site_header": "Marketify",
+    "site_brand": "Admin Panel",
+    "welcome_sign": "Welcome, Admin!",
+    "copyright": "Marketify © 2026",
+
+    "show_sidebar": True,
+    "navigation_expanded": True,
+
+    "theme": "darkly",
+
+    "topmenu_links": [
+        {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
+    ],
+}
