@@ -36,7 +36,10 @@ class VendorViewSet(ModelViewSet):
         if self.action in ["approve", "reject", "pending"]:
             return [IsAuthenticated(), IsAdminUser()]
         
-        return [IsAuthenticated()]
+        if self.action == "post":
+            return [IsAuthenticated()]
+        
+        return []
     
     @action(detail=True, methods=["patch"])
     def location(self, request, pk=None):
