@@ -9,7 +9,6 @@ from .utils import get_cart
 
 class AddToCartView(APIView):
     def post(self, request):
-
         cart = get_cart(request.user)
 
         product_id = request.data.get("product_id")
@@ -31,3 +30,29 @@ class AddToCartView(APIView):
             item.save()
 
         return Response({"message": "Added to cart"}, status=status.HTTP_200_OK)
+
+
+class RemoveFromCartView(APIView):
+
+    def post(self, request):
+        cart = get_cart(request.user)
+
+        product_id = request.data.get("product_id")
+
+        item = CartItem.objects.filter(
+            cart=cart,
+            product_id=product_id
+        ).first()
+
+        if not item:
+            return Response(
+                {"detail": "Item not found"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        item.delete()
+
+        return Response(
+            {"message": "Removed from cart"},
+            status=status.HTTP_200_OK
+        )
