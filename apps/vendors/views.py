@@ -124,12 +124,14 @@ class VendorViewSet(ModelViewSet):
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk=None):
         vendor = self.get_object()
-
-        vendor.reject()
+        
+        reason = request.data.get("reason", "Vendor application rejected.")
+        vendor.reject(reason)
 
         return Response({
             "message": "Vendor rejected",
-            "status": vendor.status
+            "status": vendor.status,
+            "reason": vendor.rejection_reason
         })
     
     @action(detail=False, methods=["get"])
