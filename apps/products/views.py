@@ -1,5 +1,5 @@
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
@@ -70,6 +70,45 @@ class ProductViewSet(ModelViewSet):
 
         return Response(serializer.data)
 
-    @action(detail=False, methods=["patch"], url_name="pending")
+
+class AdminProductViewSet(ReadOnlyModelViewSet):
+    serializer_class = ProductSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+    lookup_field = "id"
+
+    queryset = (
+        Product.objects.filter(is_deleted=False)
+        .select_related("vendor", "category")
+        .prefetch_related("images")
+    )
+
+    @action(detail=True, methods=["post"])
+    def approve(self, request, id=None):
+        product = self.get_object()
+
+        product.approve()
+
+        return Response({"detail": "Product approved"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["post"])
+    def reject(self, request, id=None):
+
+        product = self.get_object()
+
+        rejection_reason = request.data.get("reason")
+
+        if not rejection_reason:
+            return Response(
+                {"detail": "reason is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        product.reject(reason=rejection_reason)
+
+        return Response({"detail": "Product rejected"}, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["get"])
     def pending(self, request):
-        pass
+        products = Product.objects.filter(status="pending")
+        serializer = ProductSerializer(products, many=True)
+
+        return Response(serializer.data)

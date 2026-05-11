@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from django.shortcuts import get_object_or_404
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
 from rest_framework.decorators import action
 
 from apps.vendors.permissions import IsVendorOwner
@@ -41,6 +41,8 @@ class VendorViewSet(ModelViewSet):
             "location",
             "upload_logo",
             "upload_banner",
+            "delete_logo",
+            "delete_banner",
             "status",
             "activate",
             "deactivate",
@@ -86,6 +88,18 @@ class VendorViewSet(ModelViewSet):
 
         return Response({"message": "Logo uploaded", "logo_url": vendor.logo.url})
 
+    @action(detail=True, methods=["delete"])
+    def delete_logo(self, request, pk=None):
+        vendor = self.get_object()
+
+        if vendor.logo:
+            vendor.logo.delete(save=False)
+
+        vendor.logo = None
+        vendor.save()
+
+        return Response({"message": "Logo deleted"})
+
     @action(detail=True, methods=["post"])
     def upload_banner(self, request, pk=None):
         vendor = self.get_object()
@@ -97,6 +111,18 @@ class VendorViewSet(ModelViewSet):
         vendor.save()
 
         return Response({"message": "Banner uploaded", "banner_url": vendor.banner.url})
+
+    @action(detail=True, methods=["delete"])
+    def delete_banner(self, request, pk=None):
+        vendor = self.get_object()
+
+        if vendor.banner:
+            vendor.banner.delete(save=False)
+
+        vendor.banner = None
+        vendor.save()
+
+        return Response({"message": "Banner deleted"})
 
     @action(detail=True, methods=["patch"])
     def activate(self, request, pk=None):
@@ -116,19 +142,32 @@ class VendorViewSet(ModelViewSet):
             {"message": "Vendor deactivated", "is_active": vendor.is_active}
         )
 
+
+class AdminVendorViewSet(ReadOnlyModelViewSet):
+    serializer_class = VendorSerializer
+    permission_classes = [IsAuthenticated, IsAdminUser]
+
+    queryset = Vendor.objects.all()
+
     @action(detail=True, methods=["patch"])
     def approve(self, request, pk=None):
         vendor = self.get_object()
 
         vendor.approve()
 
-        return Response({"message": "Vendor approved", "status": vendor.status})
+        return Response(
+            {
+                "message": "Vendor approved",
+                "status": vendor.status,
+            }
+        )
 
     @action(detail=True, methods=["patch"])
     def reject(self, request, pk=None):
         vendor = self.get_object()
 
         reason = request.data.get("reason", "Vendor application rejected.")
+
         vendor.reject(reason)
 
         return Response(
@@ -141,6 +180,9 @@ class VendorViewSet(ModelViewSet):
 
     @action(detail=False, methods=["get"])
     def pending(self, request):
+
         pending_vendors = Vendor.objects.filter(status=Vendor.Status.PENDING)
+
         serializer = self.get_serializer(pending_vendors, many=True)
+
         return Response(serializer.data)
