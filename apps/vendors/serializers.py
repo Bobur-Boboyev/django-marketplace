@@ -23,6 +23,20 @@ class VendorSerializer(serializers.ModelSerializer):
 
         return super().create(validated_data)
     
+    def update(self, instance, validated_data):
+        if "name" in validated_data and instance.name != validated_data["name"]:
+            base_slug = slugify(validated_data['name'])
+            slug = base_slug
+            counter = 1
+
+            while Vendor.objects.filter(slug=slug).exclude(id=instance.id).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+
+            validated_data["slug"] = slug
+        
+        return super().update(instance, validated_data)
+    
 
 class LocationSerializer(serializers.Serializer):
     latitude = serializers.DecimalField(max_digits=9, decimal_places=6)

@@ -9,13 +9,15 @@ from rest_framework.decorators import action
 from apps.vendors.permissions import IsVendorOwner
 
 from .models import Vendor
-from .serializers import VendorSerializer, LocationSerializer, LogoUploadSerializer, BannerUploadSerializer, VendorStatusSerializer
+from .serializers import (VendorSerializer, 
+                          LocationSerializer, 
+                          LogoUploadSerializer, 
+                          BannerUploadSerializer)
 
 
 
 class VendorViewSet(ModelViewSet):
     serializer_class = VendorSerializer
-    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
 
