@@ -1,25 +1,30 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 
 from apps.products.models import Product
 from .models import CartItem
 from .utils import get_cart
+from .serializers import (
+    CartSerializer,
+    AddToCartSerializer,
+    RemoveFromCartSerializer,
+    UpdateCartQuantitySerializer,
+)
 
 
 class AddToCartView(APIView):
     def post(self, request):
+        serializer = AddToCartSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+
+        product = data["product"]
+        quantity = data["quantity"]
+
         cart = get_cart(request.user)
-
-        product_id = request.data.get("product_id")
-        quantity = int(request.data.get("quantity", 1))
-
-        product = Product.objects.filter(id=product_id, is_deleted=False).first()
-
-        if not product:
-            return Response(
-                {"detail": "Product not found"}, status=status.HTTP_404_NOT_FOUND
-            )
 
         item, created = CartItem.objects.get_or_create(
             cart=cart, product=product, defaults={"quantity": quantity}
@@ -33,26 +38,62 @@ class AddToCartView(APIView):
 
 
 class RemoveFromCartView(APIView):
-
     def post(self, request):
+        serializer = RemoveFromCartSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+
+        product = data["product"]
         cart = get_cart(request.user)
 
-        product_id = request.data.get("product_id")
-
-        item = CartItem.objects.filter(
-            cart=cart,
-            product_id=product_id
-        ).first()
+        item = CartItem.objects.filter(cart=cart, product=product).first()
 
         if not item:
             return Response(
-                {"detail": "Item not found"},
-                status=status.HTTP_404_NOT_FOUND
+                {"detail": "Item not found"}, status=status.HTTP_404_NOT_FOUND
             )
 
         item.delete()
 
-        return Response(
-            {"message": "Removed from cart"},
-            status=status.HTTP_200_OK
-        )
+        return Response({"message": "Removed from cart"}, status=status.HTTP_200_OK)
+
+
+class UpdateCartQuantityView(APIView):
+    def patch(self, request):
+        serializer = UpdateCartQuantitySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        data = serializer.validated_data
+
+        product = data["product"]
+        quantity = data["quantity"]
+
+        cart = get_cart(request.user)
+
+        item = CartItem.objects.filter(cart=cart, product=product).first()
+
+        if not item:
+            return Response(
+                {"detail": "Item not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        if quantity <= 0:
+            item.delete()
+            return Response({"message": "Item removed"}, status=status.HTTP_200_OK)
+
+        item.quantity = quantity
+        item.save()
+
+        return Response({"message": "Quantity updated"}, status=status.HTTP_200_OK)
+
+
+class CartDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        cart = get_cart(request.user)
+
+        serializer = CartSerializer(cart)
+
+        return Response(serializer.data)
