@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('vendors', '0003_remove_vendor_is_verified_alter_vendor_status'),
+        ("vendors", "0003_remove_vendor_is_verified_alter_vendor_status"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='vendor',
-            name='rejection_reason',
+            model_name="vendor",
+            name="rejection_reason",
             field=models.TextField(blank=True, null=True),
         ),
     ]

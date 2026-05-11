@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
@@ -15,37 +14,93 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Vendor',
+            name="Vendor",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('slug', models.SlugField(unique=True)),
-                ('description', models.TextField(blank=True)),
-                ('logo', models.ImageField(blank=True, null=True, upload_to='vendors/logos/')),
-                ('banner', models.ImageField(blank=True, null=True, upload_to='vendors/banners/')),
-                ('email', models.EmailField(max_length=254, unique=True)),
-                ('phone', models.CharField(max_length=20)),
-                ('website', models.URLField(blank=True)),
-                ('vendor_type', models.CharField(choices=[('individual', 'Individual'), ('company', 'Company')], default='company', max_length=20)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('active', 'Active'), ('blocked', 'Blocked')], default='pending', max_length=20)),
-                ('country', models.CharField(max_length=100)),
-                ('city', models.CharField(max_length=100)),
-                ('address', models.TextField()),
-                ('postal_code', models.CharField(blank=True, max_length=20)),
-                ('latitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
-                ('longitude', models.DecimalField(blank=True, decimal_places=6, max_digits=9, null=True)),
-                ('tax_number', models.CharField(blank=True, max_length=100)),
-                ('registration_number', models.CharField(blank=True, max_length=100)),
-                ('is_verified', models.BooleanField(default=False)),
-                ('is_featured', models.BooleanField(default=False)),
-                ('is_active', models.BooleanField(default=True)),
-                ('is_deleted', models.BooleanField(default=False)),
-                ('rating', models.DecimalField(decimal_places=2, default=0, max_digits=3)),
-                ('review_count', models.PositiveIntegerField(default=0)),
-                ('last_active_at', models.DateTimeField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='vendors', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("slug", models.SlugField(unique=True)),
+                ("description", models.TextField(blank=True)),
+                (
+                    "logo",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="vendors/logos/"
+                    ),
+                ),
+                (
+                    "banner",
+                    models.ImageField(
+                        blank=True, null=True, upload_to="vendors/banners/"
+                    ),
+                ),
+                ("email", models.EmailField(max_length=254, unique=True)),
+                ("phone", models.CharField(max_length=20)),
+                ("website", models.URLField(blank=True)),
+                (
+                    "vendor_type",
+                    models.CharField(
+                        choices=[("individual", "Individual"), ("company", "Company")],
+                        default="company",
+                        max_length=20,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("active", "Active"),
+                            ("blocked", "Blocked"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                ("country", models.CharField(max_length=100)),
+                ("city", models.CharField(max_length=100)),
+                ("address", models.TextField()),
+                ("postal_code", models.CharField(blank=True, max_length=20)),
+                (
+                    "latitude",
+                    models.DecimalField(
+                        blank=True, decimal_places=6, max_digits=9, null=True
+                    ),
+                ),
+                (
+                    "longitude",
+                    models.DecimalField(
+                        blank=True, decimal_places=6, max_digits=9, null=True
+                    ),
+                ),
+                ("tax_number", models.CharField(blank=True, max_length=100)),
+                ("registration_number", models.CharField(blank=True, max_length=100)),
+                ("is_verified", models.BooleanField(default=False)),
+                ("is_featured", models.BooleanField(default=False)),
+                ("is_active", models.BooleanField(default=True)),
+                ("is_deleted", models.BooleanField(default=False)),
+                (
+                    "rating",
+                    models.DecimalField(decimal_places=2, default=0, max_digits=3),
+                ),
+                ("review_count", models.PositiveIntegerField(default=0)),
+                ("last_active_at", models.DateTimeField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="vendors",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

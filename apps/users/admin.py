@@ -7,7 +7,6 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-
     list_display = (
         "email",
         "first_name",
@@ -41,36 +40,45 @@ class UserAdmin(admin.ModelAdmin):
     )
 
     fieldsets = (
-        ("Basic Information", {
-            "fields": (
-                "email",
-                "first_name",
-                "last_name",
-                "phone",
-            )
-        }),
-
-        ("Permissions", {
-            "fields": (
-                "is_active",
-                "is_staff",
-                "is_superuser",
-            )
-        }),
-
-        ("Role & Identity", {
-            "fields": (
-                "role_display",
-                "is_vendor",
-            )
-        }),
-
-        ("System Info", {
-            "fields": (
-                "date_joined",
-                "updated_at",
-            )
-        }),
+        (
+            "Basic Information",
+            {
+                "fields": (
+                    "email",
+                    "first_name",
+                    "last_name",
+                    "phone",
+                )
+            },
+        ),
+        (
+            "Permissions",
+            {
+                "fields": (
+                    "is_active",
+                    "is_staff",
+                    "is_superuser",
+                )
+            },
+        ),
+        (
+            "Role & Identity",
+            {
+                "fields": (
+                    "role_display",
+                    "is_vendor",
+                )
+            },
+        ),
+        (
+            "System Info",
+            {
+                "fields": (
+                    "date_joined",
+                    "updated_at",
+                )
+            },
+        ),
     )
 
     def get_fieldsets(self, request, obj=None):
@@ -78,16 +86,7 @@ class UserAdmin(admin.ModelAdmin):
         fieldsets = list(super().get_fieldsets(request, obj))
 
         if obj and obj.is_vendor:
-            fieldsets.append(
-                (
-                    "Vendor Accounts",
-                    {
-                        "fields": (
-                            "vendors_list",
-                        )
-                    }
-                )
-            )
+            fieldsets.append(("Vendor Accounts", {"fields": ("vendors_list",)}))
 
         return fieldsets
 
@@ -106,20 +105,11 @@ class UserAdmin(admin.ModelAdmin):
 
         vendors = obj.vendors.all()
 
-        html = render_to_string(
-            "admin/users/vendor_list.html",
-            {
-                "vendors": vendors
-            }
-        )
+        html = render_to_string("admin/users/vendor_list.html", {"vendors": vendors})
 
         return mark_safe(html)
 
     vendors_list.short_description = "Vendor Accounts"
 
     def get_queryset(self, request):
-        return (
-            super()
-            .get_queryset(request)
-            .prefetch_related("vendors")
-        )
+        return super().get_queryset(request).prefetch_related("vendors")

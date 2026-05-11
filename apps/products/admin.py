@@ -14,7 +14,6 @@ class CategoryInline(admin.TabularInline):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-
     list_display = (
         "name",
         "parent",
@@ -30,14 +29,11 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ProductImageInline(admin.TabularInline):
-
     model = ProductImage
 
     extra = 1
 
-    readonly_fields = (
-        "image_preview",
-    )
+    readonly_fields = ("image_preview",)
 
     fields = (
         "image",
@@ -48,7 +44,7 @@ class ProductImageInline(admin.TabularInline):
 
         if obj.image:
             return format_html(
-                '''
+                """
                 <img 
                     src="{}" 
                     style="
@@ -59,8 +55,8 @@ class ProductImageInline(admin.TabularInline):
                         border:1px solid #eee;
                     "
                 />
-                ''',
-                obj.image.url
+                """,
+                obj.image.url,
             )
 
         return "No image"
@@ -70,7 +66,6 @@ class ProductImageInline(admin.TabularInline):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-
     inlines = [ProductImageInline]
 
     list_display = (
@@ -108,53 +103,46 @@ class ProductAdmin(admin.ModelAdmin):
         "category",
     )
 
-    readonly_fields = (
-        "image_preview_large",
-        "vendor"
-    )
+    readonly_fields = ("image_preview_large", "vendor")
 
-    ordering = (
-        "-id",
-    )
+    ordering = ("-id",)
 
     fieldsets = (
-
-        ("Basic Information", {
-            "fields": (
-                "vendor",
-                "category",
-                "name",
-                "slug",
-                "description",
-            )
-        }),
-
-        ("Pricing & Inventory", {
-            "fields": (
-                "price",
-                "stock",
-            )
-        }),
-
-        ("Moderation", {
-            "fields": (
-                "status",
-                "rejection_reason",
-                "is_deleted",
-            )
-        }),
-
-        ("Preview", {
-            "fields": (
-                "image_preview_large",
-            )
-        }),
+        (
+            "Basic Information",
+            {
+                "fields": (
+                    "vendor",
+                    "category",
+                    "name",
+                    "slug",
+                    "description",
+                )
+            },
+        ),
+        (
+            "Pricing & Inventory",
+            {
+                "fields": (
+                    "price",
+                    "stock",
+                )
+            },
+        ),
+        (
+            "Moderation",
+            {
+                "fields": (
+                    "status",
+                    "rejection_reason",
+                    "is_deleted",
+                )
+            },
+        ),
+        ("Preview", {"fields": ("image_preview_large",)}),
     )
 
-    prepopulated_fields = {
-        "slug": ("name",)
-    }
-
+    prepopulated_fields = {"slug": ("name",)}
 
     def image_preview_small(self, obj):
 
@@ -162,7 +150,7 @@ class ProductAdmin(admin.ModelAdmin):
 
         if first_image and first_image.image:
             return format_html(
-                '''
+                """
                 <img 
                     src="{}"
                     style="
@@ -173,12 +161,12 @@ class ProductAdmin(admin.ModelAdmin):
                         border:1px solid #eee;
                     "
                 />
-                ''',
-                first_image.image.url
+                """,
+                first_image.image.url,
             )
 
         return format_html(
-            '''
+            """
             <div style="
                 width:45px;
                 height:45px;
@@ -192,11 +180,10 @@ class ProductAdmin(admin.ModelAdmin):
             ">
                 —
             </div>
-            '''
+            """
         )
 
     image_preview_small.short_description = ""
-
 
     def image_preview_large(self, obj):
 
@@ -208,7 +195,6 @@ class ProductAdmin(admin.ModelAdmin):
         html = '<div style="display:flex;gap:10px;flex-wrap:wrap;">'
 
         for image in images:
-
             html += f'''
                 <img 
                     src="{image.image.url}"
@@ -228,12 +214,10 @@ class ProductAdmin(admin.ModelAdmin):
 
     image_preview_large.short_description = "Product Gallery"
 
-
     def price_display(self, obj):
         return f"${obj.price}"
 
     price_display.short_description = "Price"
-
 
     def stock_display(self, obj):
 
@@ -246,16 +230,16 @@ class ProductAdmin(admin.ModelAdmin):
             color = "#fd7e14"
 
         return format_html(
-            '''
+            """
             <span style="
                 font-weight:600;
                 color:{};
             ">
                 {}
             </span>
-            ''',
+            """,
             color,
-            obj.stock
+            obj.stock,
         )
 
     stock_display.short_description = "Stock"
@@ -269,13 +253,10 @@ class ProductAdmin(admin.ModelAdmin):
             "draft": ("#e9ecef", "#343a40"),
         }
 
-        bg, text = colors.get(
-            obj.status,
-            ("#eee", "#111")
-        )
+        bg, text = colors.get(obj.status, ("#eee", "#111"))
 
         return format_html(
-            '''
+            """
             <span style="
                 background:{};
                 color:{};
@@ -287,10 +268,10 @@ class ProductAdmin(admin.ModelAdmin):
             ">
                 {}
             </span>
-            ''',
+            """,
             bg,
             text,
-            obj.status
+            obj.status,
         )
 
     status_badge.short_description = "Status"
@@ -312,26 +293,21 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(ProductImage)
 class ProductImageAdmin(admin.ModelAdmin):
-
     list_display = (
         "id",
         "product",
         "image_preview",
     )
 
-    search_fields = (
-        "product__name",
-    )
+    search_fields = ("product__name",)
 
-    autocomplete_fields = (
-        "product",
-    )
+    autocomplete_fields = ("product",)
 
     def image_preview(self, obj):
 
         if obj.image:
             return format_html(
-                '''
+                """
                 <img 
                     src="{}"
                     style="
@@ -342,8 +318,8 @@ class ProductImageAdmin(admin.ModelAdmin):
                         border:1px solid #eee;
                     "
                 />
-                ''',
-                obj.image.url
+                """,
+                obj.image.url,
             )
 
         return "No image"

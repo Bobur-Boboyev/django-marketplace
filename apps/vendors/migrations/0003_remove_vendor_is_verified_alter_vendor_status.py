@@ -4,19 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('vendors', '0002_alter_vendor_name'),
+        ("vendors", "0002_alter_vendor_name"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='vendor',
-            name='is_verified',
+            model_name="vendor",
+            name="is_verified",
         ),
         migrations.AlterField(
-            model_name='vendor',
-            name='status',
-            field=models.CharField(choices=[('pending', 'Pending'), ('active', 'Active'), ('rejected', 'Rejected'), ('blocked', 'Blocked')], default='pending', max_length=20),
+            model_name="vendor",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("pending", "Pending"),
+                    ("active", "Active"),
+                    ("rejected", "Rejected"),
+                    ("blocked", "Blocked"),
+                ],
+                default="pending",
+                max_length=20,
+            ),
         ),
     ]

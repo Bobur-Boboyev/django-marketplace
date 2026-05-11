@@ -7,7 +7,6 @@ from .forms import VendorAdminForm
 
 @admin.register(Vendor)
 class VendorAdmin(admin.ModelAdmin):
-
     form = VendorAdminForm
     change_form_template = "admin/vendor_change_form.html"
 
@@ -43,79 +42,93 @@ class VendorAdmin(admin.ModelAdmin):
     ordering = ("-id",)
 
     fieldsets = (
-        ("Ownership", {
-            "fields": ("user",)
-        }),
-
-        ("Basic Info", {
-            "fields": (
-                "name",
-                "slug",
-                "description",
-            )
-        }),
-
-        ("Contact", {
-            "fields": (
-                "email",
-                "phone",
-                "website",
-            )
-        }),
-
-        ("Business", {
-            "fields": (
-                "vendor_type",
-                "status",
-                "is_active",
-                "is_featured",
-                "is_deleted",
-            )
-        }),
-
-        ("Media", {
-            "fields": (
-                "logo",
-                "logo_preview",
-                "banner",
-                "banner_preview",
-            )
-        }),
-
-        ("Location", {
-            "classes": ("collapse",),
-            "fields": (
-                "location_button",
-                "country",
-                "city",
-                "address",
-                "postal_code",
-                "latitude",
-                "longitude",
-            )
-        }),
-
-        ("Legal", {
-            "fields": (
-                "tax_number",
-                "registration_number",
-            )
-        }),
-
-        ("Stats", {
-            "fields": (
-                "rating",
-                "review_count",
-                "last_active_at",
-            )
-        }),
-
-        ("System", {
-            "fields": (
-                "created_at",
-                "updated_at",
-            )
-        }),
+        ("Ownership", {"fields": ("user",)}),
+        (
+            "Basic Info",
+            {
+                "fields": (
+                    "name",
+                    "slug",
+                    "description",
+                )
+            },
+        ),
+        (
+            "Contact",
+            {
+                "fields": (
+                    "email",
+                    "phone",
+                    "website",
+                )
+            },
+        ),
+        (
+            "Business",
+            {
+                "fields": (
+                    "vendor_type",
+                    "status",
+                    "is_active",
+                    "is_featured",
+                    "is_deleted",
+                )
+            },
+        ),
+        (
+            "Media",
+            {
+                "fields": (
+                    "logo",
+                    "logo_preview",
+                    "banner",
+                    "banner_preview",
+                )
+            },
+        ),
+        (
+            "Location",
+            {
+                "classes": ("collapse",),
+                "fields": (
+                    "location_button",
+                    "country",
+                    "city",
+                    "address",
+                    "postal_code",
+                    "latitude",
+                    "longitude",
+                ),
+            },
+        ),
+        (
+            "Legal",
+            {
+                "fields": (
+                    "tax_number",
+                    "registration_number",
+                )
+            },
+        ),
+        (
+            "Stats",
+            {
+                "fields": (
+                    "rating",
+                    "review_count",
+                    "last_active_at",
+                )
+            },
+        ),
+        (
+            "System",
+            {
+                "fields": (
+                    "created_at",
+                    "updated_at",
+                )
+            },
+        ),
     )
 
     def get_readonly_fields(self, request, obj=None):
@@ -145,7 +158,7 @@ class VendorAdmin(admin.ModelAdmin):
         return format_html(
             '<button type="button" id="openMapBtn" style="padding:8px 12px;'
             'background:#0d6efd;color:white;border:none;border-radius:6px;cursor:pointer;">'
-            'Location</button>'
+            "Location</button>"
         )
 
     location_button.short_description = "Location Picker"
@@ -154,7 +167,7 @@ class VendorAdmin(admin.ModelAdmin):
         if obj.logo:
             return format_html(
                 '<img src="{}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;" />',
-                obj.logo.url
+                obj.logo.url,
             )
         return "—"
 
@@ -164,7 +177,7 @@ class VendorAdmin(admin.ModelAdmin):
         if obj.logo:
             return format_html(
                 '<img src="{}" style="width:120px;height:120px;border-radius:10px;object-fit:cover;" />',
-                obj.logo.url
+                obj.logo.url,
             )
         return "No logo"
 
@@ -172,7 +185,7 @@ class VendorAdmin(admin.ModelAdmin):
         if obj.banner:
             return format_html(
                 '<img src="{}" style="width:300px;height:120px;border-radius:10px;object-fit:cover;" />',
-                obj.banner.url
+                obj.banner.url,
             )
         return "No banner"
 

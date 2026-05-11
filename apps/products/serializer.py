@@ -3,6 +3,7 @@ from django.utils.text import slugify
 
 from .models import Product, ProductImage, Category
 
+
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -10,7 +11,7 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["status", "rejection_reason", "slug"]
 
     def create(self, validated_data):
-        base_slug = slugify(validated_data['name'])
+        base_slug = slugify(validated_data["name"])
         slug = base_slug
         counter = 1
 
@@ -20,10 +21,10 @@ class ProductSerializer(serializers.ModelSerializer):
 
         validated_data["slug"] = slug
         return super().create(validated_data)
-    
+
     def update(self, instance, validated_data):
         if "name" in validated_data and instance.name != validated_data["name"]:
-            base_slug = slugify(validated_data['name'])
+            base_slug = slugify(validated_data["name"])
             slug = base_slug
             counter = 1
 
@@ -32,5 +33,5 @@ class ProductSerializer(serializers.ModelSerializer):
                 counter += 1
 
             validated_data["slug"] = slug
-        
+
         return super().update(instance, validated_data)

@@ -8,12 +8,10 @@ from apps.users.views import LogoutView, register_user, user_profile, list_users
 
 
 urlpatterns = [
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/logout/', LogoutView.as_view(), name='auth_logout'),
-
-    path('api/users/register/', register_user, name='register'),
-    path('api/users/profile/', user_profile, name='profile'),
-
-    path('api/users/', list_users, name='list_users')
+    path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
+    path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
+    path("logout/", LogoutView.as_view(), name="auth_logout"),
+    path("users/register/", register_user, name="register"),
+    path("users/profile/", user_profile, name="profile"),
+    path("users/", list_users, name="list_users"),
 ]

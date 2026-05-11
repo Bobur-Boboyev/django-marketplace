@@ -6,7 +6,11 @@ from .models import User
 class UserSerializer(serializers.Serializer):
     id = serializers.IntegerField(read_only=True)
     email = serializers.EmailField(
-        validators=[UniqueValidator(queryset=User.objects.all(), message="Email already exists.")]
+        validators=[
+            UniqueValidator(
+                queryset=User.objects.all(), message="Email already exists."
+            )
+        ]
     )
     first_name = serializers.CharField(required=False, allow_blank=True)
     last_name = serializers.CharField(required=False, allow_blank=True)
@@ -18,7 +22,7 @@ class UserSerializer(serializers.Serializer):
         return User.objects.create_user(**validated_data)
 
     def update(self, instance, validated_data):
-        password = validated_data.pop('password', None)
+        password = validated_data.pop("password", None)
         if password:
             instance.set_password(password)
         for attr, value in validated_data.items():

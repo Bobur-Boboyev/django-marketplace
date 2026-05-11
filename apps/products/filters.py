@@ -5,23 +5,19 @@ def filter_products(queryset, params):
     price_max = params.get("price_max")
     search = params.get("search")
 
+    queryset = queryset.filter(is_deleted=False)
+
     if category:
-        queryset = queryset.filter(
-            category__slug=category
-        )
+        queryset = queryset.filter(category__slug=category)
 
     if price_min and price_max:
-        queryset = queryset.filter(
-            price__range=(price_min, price_max)
-        )
+        queryset = queryset.filter(price__range=(price_min, price_max))
     elif price_min:
         queryset = queryset.filter(price__gte=price_min)
     elif price_max:
         queryset = queryset.filter(price__lte=price_max)
 
     if search:
-        queryset = queryset.filter(
-            name__icontains=search
-        )
+        queryset = queryset.filter(name__icontains=search)
 
     return queryset
