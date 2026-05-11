@@ -4,16 +4,8 @@ from .views import VendorViewSet, AdminVendorViewSet
 
 router = DefaultRouter()
 
-router.register(
-    r"vendors",
-    VendorViewSet,
-    basename="vendors"
-)
+router.register(r"vendors", VendorViewSet, basename="vendors")
 
-router.register(
-    r"admin/vendors",
-    AdminVendorViewSet,
-    basename="admin-vendors"
-)
+router.register(r"admin/vendors", AdminVendorViewSet, basename="admin-vendors")
 
 urlpatterns = router.urls

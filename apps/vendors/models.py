@@ -75,3 +75,6 @@ class Vendor(models.Model):
     def deactivate(self):
         self.is_active = False
         self.save()
+
+    class Meta:
+        ordering = ["-created_at"]

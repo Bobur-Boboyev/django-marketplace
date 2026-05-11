@@ -4,7 +4,15 @@ from django.utils.text import slugify
 from .models import Product, ProductImage, Category
 
 
+class ProductImageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ProductImage
+        fields = ["id", "image"]
+
+
 class ProductSerializer(serializers.ModelSerializer):
+    images = ProductImageSerializer(many=True, read_only=True)
+
     class Meta:
         model = Product
         fields = "__all__"
@@ -35,3 +43,7 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data["slug"] = slug
 
         return super().update(instance, validated_data)
+
+
+class ProductImageUploadSerializer(serializers.Serializer):
+    image = serializers.ImageField()

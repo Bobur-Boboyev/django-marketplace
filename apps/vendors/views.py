@@ -181,8 +181,15 @@ class AdminVendorViewSet(ReadOnlyModelViewSet):
     @action(detail=False, methods=["get"])
     def pending(self, request):
 
-        pending_vendors = Vendor.objects.filter(status=Vendor.Status.PENDING)
+        queryset = Vendor.objects.filter(status=Vendor.Status.PENDING)
 
-        serializer = self.get_serializer(pending_vendors, many=True)
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
 
         return Response(serializer.data)

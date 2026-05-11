@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.decorators import action
 
 from .models import Product
-from .serializer import ProductSerializer
+from .serializer import ProductSerializer, ProductImageUploadSerializer
 from .permissions import IsVendorOwner
 from .filters import filter_products
 
@@ -25,6 +25,8 @@ class ProductViewSet(ModelViewSet):
             "partial_update",
             "destroy",
             "my_products",
+            "upload_image",
+            "delete_image",
         ]:
             return [IsAuthenticated(), IsVendorOwner()]
 
@@ -63,12 +65,64 @@ class ProductViewSet(ModelViewSet):
             .select_related("category", "vendor")
             .prefetch_related("images")
         )
-
         queryset = filter_products(queryset, request.query_params)
+
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+
+            return self.get_paginated_response(serializer.data)
 
         serializer = self.get_serializer(queryset, many=True)
 
         return Response(serializer.data)
+
+    @action(detail=True, methods=["post"])
+    def upload_image(self, request, slug=None):
+
+        product = self.get_object()
+
+        serializer = ProductImageUploadSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+
+        image = ProductImage.objects.create(
+            product=product, image=serializer.validated_data["image"]
+        )
+
+        return Response(
+            {
+                "message": "Image uploaded",
+                "image_id": image.id,
+                "image_url": image.image.url,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
+    @action(detail=True, methods=["delete"])
+    def delete_image(self, request, slug=None):
+
+        product = self.get_object()
+
+        image_id = request.data.get("image_id")
+
+        if not image_id:
+            return Response(
+                {"detail": "image_id is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        image = product.images.filter(id=image_id).first()
+
+        if not image:
+            return Response(
+                {"detail": "Image not found"}, status=status.HTTP_404_NOT_FOUND
+            )
+
+        image.image.delete(save=False)
+        image.delete()
+
+        return Response({"message": "Image deleted"}, status=status.HTTP_200_OK)
 
 
 class AdminProductViewSet(ReadOnlyModelViewSet):
@@ -108,7 +162,18 @@ class AdminProductViewSet(ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["get"])
     def pending(self, request):
-        products = Product.objects.filter(status="pending")
-        serializer = ProductSerializer(products, many=True)
+
+        queryset = Product.objects.filter(
+            status=Product.Status.PENDING, is_deleted=False
+        )
+
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset, many=True)
 
         return Response(serializer.data)
