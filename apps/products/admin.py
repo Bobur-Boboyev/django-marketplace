@@ -110,6 +110,7 @@ class ProductAdmin(admin.ModelAdmin):
 
     readonly_fields = (
         "image_preview_large",
+        "vendor"
     )
 
     ordering = (
