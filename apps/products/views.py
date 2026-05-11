@@ -80,7 +80,6 @@ class ProductViewSet(ModelViewSet):
 
     @action(detail=True, methods=["post"])
     def upload_image(self, request, slug=None):
-
         product = self.get_object()
 
         serializer = ProductImageUploadSerializer(data=request.data)
@@ -102,7 +101,6 @@ class ProductViewSet(ModelViewSet):
 
     @action(detail=True, methods=["delete"])
     def delete_image(self, request, slug=None):
-
         product = self.get_object()
 
         image_id = request.data.get("image_id")
@@ -146,7 +144,6 @@ class AdminProductViewSet(ReadOnlyModelViewSet):
 
     @action(detail=True, methods=["post"])
     def reject(self, request, id=None):
-
         product = self.get_object()
 
         rejection_reason = request.data.get("reason")
@@ -162,7 +159,6 @@ class AdminProductViewSet(ReadOnlyModelViewSet):
 
     @action(detail=False, methods=["get"])
     def pending(self, request):
-
         queryset = Product.objects.filter(
             status=Product.Status.PENDING, is_deleted=False
         )
