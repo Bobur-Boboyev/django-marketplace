@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     "apps.reviews",
     "apps.notifications",
     "apps.core",
+    "apps.wallet",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
