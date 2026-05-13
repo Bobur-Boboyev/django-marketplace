@@ -28,7 +28,8 @@ urlpatterns = [
     path("api/", include("apps.products.urls")),
     path("api/", include("apps.cart.urls")),
     path("api/", include("apps.orders.urls")),
-    path("api/payments/", include("apps.payments.urls"))
+    path("api/payments/", include("apps.payments.urls")),
+    path("api/wallet/", include("apps.wallet.urls"))
 ]
 
 # if settings.DEBUG:

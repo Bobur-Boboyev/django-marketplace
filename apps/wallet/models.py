@@ -22,3 +22,44 @@ class WalletTransaction(models.Model):
     reference = models.CharField(max_length=255)
 
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class WithdrawalRequest(models.Model):
+
+    class Status(models.TextChoices):
+        PENDING = "pending", "Pending"
+        APPROVED = "approved", "Approved"
+        REJECTED = "rejected", "Rejected"
+        PAID = "paid", "Paid"
+
+    vendor = models.ForeignKey(
+        Vendor,
+        on_delete=models.CASCADE,
+        related_name="withdrawals"
+    )
+    amount = models.DecimalField(
+        max_digits=12,
+        decimal_places=2
+    )
+    card_number = models.CharField(max_length=32)
+    status = models.CharField(
+        max_length=20,
+        choices=Status.choices,
+        default=Status.PENDING
+    )
+    rejection_reason = models.TextField(
+        null=True,
+        blank=True
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    approved_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+    paid_at = models.DateTimeField(
+        null=True,
+        blank=True
+    )
+
+    def __str__(self):
+        return f"{self.vendor.name} - {self.amount}"

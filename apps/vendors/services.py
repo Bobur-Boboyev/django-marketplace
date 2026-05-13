@@ -1,5 +1,5 @@
 from apps.orders.models import OrderItem
-from apps.wallet.services import credit_wallet
+from apps.wallet.services import WalletService
 
 
 def distribute_payment(order_id):
@@ -13,7 +13,7 @@ def distribute_payment(order_id):
 
     for vendor_id, amount in vendor_map.items():
 
-        credit_wallet(
+        WalletService.credit_wallet(
             vendor_id=vendor_id,
             amount=amount,
             reference=f"order_{order_id}"
