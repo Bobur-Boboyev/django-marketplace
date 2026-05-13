@@ -1,8 +1,11 @@
+from django.conf import settings
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.db.models import Sum
+
+from paytechuz.gateways.payme import PaymeGateway
 
 from .serializers import (
     CreateOrderSerializer,
@@ -15,21 +18,44 @@ from .utils import StandardPagination
 
 from apps.vendors.permissions import IsVendorOwner
 from apps.vendors.models import Vendor
+from apps.payments.models import Invoice
 
 
 class CreateOrderView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = CreateOrderSerializer()
 
-        order = serializer.create(validated_data={}, user=request.user)
+        serializer = CreateOrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
 
-        return Response(
-            {"message": "Order created", "order_id": order.id},
-            status=status.HTTP_201_CREATED,
+        order = serializer.save(user=request.user)
+
+        invoice = Invoice.objects.create(
+            order=order,
+            amount=order.total,
+            status="pending"
         )
 
+        payment_url = None
+
+        gateway = PaymeGateway(
+                payme_id=settings.PAYME['PAYME_ID'],
+                payme_key=settings.PAYME['PAYME_KEY'],
+                is_test_mode=settings.PAYME['IS_TEST_MODE']
+            )
+        payment_url = gateway.create_payment(
+                id=invoice.id,
+                amount=invoice.amount,
+                return_url="https://example.com/success",
+                account_field_name=settings.PAYTECHUZ['PAYME']['ACCOUNT_FIELD']
+            )
+        
+        return Response({
+            'order_id': order.id,
+            'invoice_id': invoice.id,
+            'payment_url': payment_url
+        }, status=status.HTTP_201_CREATED)
 
 class OrderHistoryView(APIView):
     permission_classes = [IsAuthenticated]

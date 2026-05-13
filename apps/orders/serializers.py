@@ -3,6 +3,7 @@ from django.db import transaction
 
 from apps.cart.models import Cart
 from apps.orders.models import Order, OrderItem
+from apps.payments.models import Invoice
 from apps.cart.utils import get_cart
 
 
