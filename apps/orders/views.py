@@ -26,15 +26,16 @@ class CreateOrderView(APIView):
 
     def post(self, request):
 
-        serializer = CreateOrderSerializer(data=request.data)
+        serializer = CreateOrderSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
 
-        order = serializer.save(user=request.user)
+        order = serializer.save()
 
         invoice = Invoice.objects.create(
             order=order,
-            amount=order.total,
-            status="pending"
+            amount=order.total_price,
+            status="pending",
+            user=request.user
         )
 
         payment_url = None
@@ -48,7 +49,7 @@ class CreateOrderView(APIView):
                 id=invoice.id,
                 amount=invoice.amount,
                 return_url="https://example.com/success",
-                account_field_name=settings.PAYTECHUZ['PAYME']['ACCOUNT_FIELD']
+                account_field_name=settings.PAYME['ACCOUNT_FIELD']
             )
         
         return Response({

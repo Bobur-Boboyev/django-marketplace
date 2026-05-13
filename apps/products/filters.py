@@ -5,7 +5,7 @@ def filter_products(queryset, params):
     price_max = params.get("price_max")
     search = params.get("search")
 
-    queryset = queryset.filter(is_deleted=False)
+    queryset = queryset.filter(is_deleted=False, status="pending")
 
     if category:
         queryset = queryset.filter(category__slug=category)

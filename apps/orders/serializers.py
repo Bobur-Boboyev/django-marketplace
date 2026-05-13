@@ -8,9 +8,23 @@ from apps.cart.utils import get_cart
 
 
 class CreateOrderSerializer(serializers.Serializer):
-    pass
+    latitude = serializers.DecimalField(max_digits=9, decimal_places=6)
+    longitude = serializers.DecimalField(max_digits=9, decimal_places=6)
 
-    def create(self, validated_data, user):
+    def validate_latitude(self, value):
+        if value < -90 or value > 90:
+            raise serializers.ValidationError("Latitude must be between -90 and 90")
+        return value
+
+    def validate_longitude(self, value):
+        if value < -180 or value > 180:
+            raise serializers.ValidationError("Longitude must be between -180 and 180")
+        return value
+
+    def create(self, validated_data):
+        request = self.context["request"]
+        user = request.user
+
         cart = get_cart(user)
         items = cart.items.select_related("product")
 
@@ -18,7 +32,7 @@ class CreateOrderSerializer(serializers.Serializer):
             raise serializers.ValidationError("Cart is empty")
 
         with transaction.atomic():
-            order = Order.objects.create(user=user)
+            order = Order.objects.create(user=user, latitude=validated_data["latitude"], longitude=validated_data["longitude"])
 
             total = 0
 
