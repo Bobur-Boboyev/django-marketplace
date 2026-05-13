@@ -7,6 +7,8 @@ class Order(models.Model):
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="orders"
     )
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    longitude = models.DecimalField(max_digits=9, decimal_places=6)
     created_at = models.DateTimeField(auto_now_add=True)
 
     @property
