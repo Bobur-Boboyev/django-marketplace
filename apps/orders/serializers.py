@@ -17,15 +17,11 @@ class CreateOrderSerializer(serializers.Serializer):
             raise serializers.ValidationError("Cart is empty")
 
         with transaction.atomic():
-
-            order = Order.objects.create(
-                user=user
-            )
+            order = Order.objects.create(user=user)
 
             total = 0
 
             for item in items:
-
                 product = item.product
 
                 if product.stock < item.quantity:
@@ -37,7 +33,7 @@ class CreateOrderSerializer(serializers.Serializer):
                     order=order,
                     product=product,
                     price=product.price,
-                    quantity=item.quantity
+                    quantity=item.quantity,
                 )
 
                 product.stock -= item.quantity
@@ -73,13 +69,7 @@ class OrderDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = [
-            "id",
-            "status",
-            "total_price",
-            "created_at",
-            "items"
-        ]
+        fields = ["id", "status", "total_price", "created_at", "items"]
 
 
 class OrderSerializer(serializers.ModelSerializer):
@@ -87,14 +77,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = [
-            "id",
-            "status",
-            "total_price",
-            "created_at"
-        ]
-    
+        fields = ["id", "status", "total_price", "created_at"]
+
 
 class UpdateOrderItemStatusSerializer(serializers.Serializer):
-
     status = serializers.ChoiceField(choices=OrderItem.Status.choices)

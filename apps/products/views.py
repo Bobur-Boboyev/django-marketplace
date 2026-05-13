@@ -13,7 +13,7 @@ from .filters import filter_products
 class ProductViewSet(ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    # lookup_field = "slug"
+    lookup_field = "slug"
 
     def get_permissions(self):
         if self.action in ["list", "retrieve"]:

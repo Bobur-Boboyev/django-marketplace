@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "paytechuz.integrations.django",
 ]
 
 MIDDLEWARE = [
@@ -182,4 +183,14 @@ JAZZMIN_SETTINGS = {
     "topmenu_links": [
         {"name": "Dashboard", "url": "admin:index", "permissions": ["auth.view_user"]},
     ],
+}
+
+PAYME = {
+    "PAYME_ID": "your_payme_id",
+    "PAYME_KEY": "your_payme_key",
+    "ACCOUNT_MODEL": "apps.payment.models.Invoice",
+    "ACCOUNT_FIELD": "id",
+    "AMOUNT_FIELD": "amount",
+    "ONE_TIME_PAYMENT": True,
+    "IS_TEST_MODE": True,
 }
