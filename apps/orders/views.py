@@ -26,37 +26,40 @@ class CreateOrderView(APIView):
 
     def post(self, request):
 
-        serializer = CreateOrderSerializer(data=request.data, context={"request": request})
+        serializer = CreateOrderSerializer(
+            data=request.data, context={"request": request}
+        )
         serializer.is_valid(raise_exception=True)
 
         order = serializer.save()
 
         invoice = Invoice.objects.create(
-            order=order,
-            amount=order.total_price,
-            status="pending",
-            user=request.user
+            order=order, amount=order.total_price, status="pending", user=request.user
         )
 
         payment_url = None
 
         gateway = PaymeGateway(
-                payme_id=settings.PAYME['PAYME_ID'],
-                payme_key=settings.PAYME['PAYME_KEY'],
-                is_test_mode=settings.PAYME['IS_TEST_MODE']
-            )
+            payme_id=settings.PAYME["PAYME_ID"],
+            payme_key=settings.PAYME["PAYME_KEY"],
+            is_test_mode=settings.PAYME["IS_TEST_MODE"],
+        )
         payment_url = gateway.create_payment(
-                id=invoice.id,
-                amount=invoice.amount,
-                return_url="https://example.com/success",
-                account_field_name=settings.PAYME['ACCOUNT_FIELD']
-            )
-        
-        return Response({
-            'order_id': order.id,
-            'invoice_id': invoice.id,
-            'payment_url': payment_url
-        }, status=status.HTTP_201_CREATED)
+            id=invoice.id,
+            amount=invoice.amount,
+            return_url="https://example.com/success",
+            account_field_name=settings.PAYME["ACCOUNT_FIELD"],
+        )
+
+        return Response(
+            {
+                "order_id": order.id,
+                "invoice_id": invoice.id,
+                "payment_url": payment_url,
+            },
+            status=status.HTTP_201_CREATED,
+        )
+
 
 class OrderHistoryView(APIView):
     permission_classes = [IsAuthenticated]

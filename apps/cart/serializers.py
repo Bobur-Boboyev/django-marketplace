@@ -31,7 +31,9 @@ class AddToCartSerializer(serializers.Serializer):
     def validate(self, data):
 
         try:
-            product = Product.objects.get(id=data["product_id"], is_deleted=False, status="approved")
+            product = Product.objects.get(
+                id=data["product_id"], is_deleted=False, status="approved"
+            )
         except Product.DoesNotExist:
             raise serializers.ValidationError({"product_id": "Product not found"})
 

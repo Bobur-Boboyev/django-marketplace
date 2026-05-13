@@ -32,7 +32,11 @@ class CreateOrderSerializer(serializers.Serializer):
             raise serializers.ValidationError("Cart is empty")
 
         with transaction.atomic():
-            order = Order.objects.create(user=user, latitude=validated_data["latitude"], longitude=validated_data["longitude"])
+            order = Order.objects.create(
+                user=user,
+                latitude=validated_data["latitude"],
+                longitude=validated_data["longitude"],
+            )
 
             total = 0
 

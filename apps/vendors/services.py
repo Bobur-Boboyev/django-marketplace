@@ -12,9 +12,6 @@ def distribute_payment(order_id):
         vendor_map[item.vendor_id] = vendor_map.get(item.vendor_id, 0) + item.price
 
     for vendor_id, amount in vendor_map.items():
-
         WalletService.credit_wallet(
-            vendor_id=vendor_id,
-            amount=amount,
-            reference=f"order_{order_id}"
+            vendor_id=vendor_id, amount=amount, reference=f"order_{order_id}"
         )

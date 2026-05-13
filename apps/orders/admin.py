@@ -95,9 +95,7 @@ class OrderItemAdmin(admin.ModelAdmin):
         "product",
     )
 
-    readonly_fields = (
-        "created_at",
-    )
+    readonly_fields = ("created_at",)
 
     ordering = ("-created_at",)
 

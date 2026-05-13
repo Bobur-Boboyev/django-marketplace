@@ -4,26 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('orders', '0002_remove_order_status_orderitem_status'),
+        ("orders", "0002_remove_order_status_orderitem_status"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='order',
-            name='is_paid',
+            model_name="order",
+            name="is_paid",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='order',
-            name='latitude',
+            model_name="order",
+            name="latitude",
             field=models.DecimalField(decimal_places=6, default=1, max_digits=9),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='order',
-            name='longitude',
+            model_name="order",
+            name="longitude",
             field=models.DecimalField(decimal_places=6, default=1, max_digits=9),
             preserve_default=False,
         ),

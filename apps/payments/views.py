@@ -6,7 +6,6 @@ from apps.vendors.services import distribute_payment
 
 
 class PaymeWebhookView(BasePaymeWebhookView):
-
     def successfully_payment(self, params, transaction):
 
         invoice = Invoice.objects.get(id=transaction.account_id)

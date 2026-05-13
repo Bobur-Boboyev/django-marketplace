@@ -20,6 +20,7 @@ class CartAdmin(admin.ModelAdmin):
 
     def total_items(self, obj):
         return sum(item.quantity for item in obj.items.all())
+
     total_items.short_description = "Total Items"
 
 
