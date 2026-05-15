@@ -5,14 +5,10 @@ from apps.products.models import Product
 
 class Review(models.Model):
     product = models.ForeignKey(
-        Product,
-        on_delete=models.CASCADE,
-        related_name="reviews"
+        Product, on_delete=models.CASCADE, related_name="reviews"
     )
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name="reviews"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reviews"
     )
     rating = models.PositiveSmallIntegerField()
     comment = models.TextField(blank=True)
@@ -20,8 +16,8 @@ class Review(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['-created_at']
-        unique_together = ['product', 'user']
+        ordering = ["-created_at"]
+        unique_together = ["product", "user"]
 
     def __str__(self):
         return f"{self.user} -> {self.product} ({self.rating})"

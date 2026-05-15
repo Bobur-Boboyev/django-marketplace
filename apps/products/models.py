@@ -36,6 +36,8 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=12, decimal_places=2)
     stock = models.PositiveIntegerField(default=0)
+    average_rating = models.FloatField(default=0)
+    reviews_count = models.PositiveIntegerField(default=0)
     status = models.CharField(
         max_length=20, choices=Status.choices, default=Status.PENDING
     )

@@ -5,25 +5,51 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('vendors', '0005_alter_vendor_options'),
-        ('wallet', '0001_initial'),
+        ("vendors", "0005_alter_vendor_options"),
+        ("wallet", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='WithdrawalRequest',
+            name="WithdrawalRequest",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('amount', models.DecimalField(decimal_places=2, max_digits=12)),
-                ('card_number', models.CharField(max_length=32)),
-                ('status', models.CharField(choices=[('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected'), ('paid', 'Paid')], default='pending', max_length=20)),
-                ('rejection_reason', models.TextField(blank=True, null=True)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('approved_at', models.DateTimeField(blank=True, null=True)),
-                ('paid_at', models.DateTimeField(blank=True, null=True)),
-                ('vendor', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='withdrawals', to='vendors.vendor')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("amount", models.DecimalField(decimal_places=2, max_digits=12)),
+                ("card_number", models.CharField(max_length=32)),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("pending", "Pending"),
+                            ("approved", "Approved"),
+                            ("rejected", "Rejected"),
+                            ("paid", "Paid"),
+                        ],
+                        default="pending",
+                        max_length=20,
+                    ),
+                ),
+                ("rejection_reason", models.TextField(blank=True, null=True)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("approved_at", models.DateTimeField(blank=True, null=True)),
+                ("paid_at", models.DateTimeField(blank=True, null=True)),
+                (
+                    "vendor",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="withdrawals",
+                        to="vendors.vendor",
+                    ),
+                ),
             ],
         ),
     ]
