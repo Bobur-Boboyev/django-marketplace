@@ -8,10 +8,7 @@ from apps.products.models import Product
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.select_related(
-        'user',
-        'product'
-    )
+    queryset = Review.objects.select_related("user", "product")
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -31,14 +28,9 @@ class ReviewViewSet(viewsets.ModelViewSet):
     def update_product_rating(self, product):
         reviews = product.reviews.all()
 
-        average = reviews.aggregate(avg=Avg('rating'))['avg'] or 0
+        average = reviews.aggregate(avg=Avg("rating"))["avg"] or 0
 
         product.average_rating = round(average, 2)
         product.reviews_count = reviews.count()
 
-        product.save(
-            update_fields=[
-                'average_rating',
-                'reviews_count'
-            ]
-        )
+        product.save(update_fields=["average_rating", "reviews_count"])

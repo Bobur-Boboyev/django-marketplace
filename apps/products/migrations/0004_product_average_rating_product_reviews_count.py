@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('products', '0003_alter_product_options_product_created_at_and_more'),
+        ("products", "0003_alter_product_options_product_created_at_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='product',
-            name='average_rating',
+            model_name="product",
+            name="average_rating",
             field=models.FloatField(default=0),
         ),
         migrations.AddField(
-            model_name='product',
-            name='reviews_count',
+            model_name="product",
+            name="reviews_count",
             field=models.PositiveIntegerField(default=0),
         ),
     ]
