@@ -19,3 +19,6 @@ requests==2.34.0
 sqlparse==0.5.5
 tzdata==2026.2
 urllib3==2.7.0
+celery==5.5.3
+redis==6.0.0
+gunicorn==23.0.0
