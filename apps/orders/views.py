@@ -19,6 +19,10 @@ from .utils import StandardPagination
 from apps.vendors.permissions import IsVendorOwner
 from apps.vendors.models import Vendor
 from apps.payments.models import Invoice
+from apps.notifications.tasks import (
+    send_order_confirmation_email,
+    send_order_status_email,
+)
 
 
 class CreateOrderView(APIView):
@@ -49,6 +53,10 @@ class CreateOrderView(APIView):
             amount=invoice.amount,
             return_url="https://example.com/success",
             account_field_name=settings.PAYME["ACCOUNT_FIELD"],
+        )
+        send_order_confirmation_email.delay(
+            request.user.email,
+            order.id,
         )
 
         return Response(
@@ -107,10 +115,18 @@ class CancelOrderView(APIView):
 
         for item in order.items.all():
             product = item.product
+
             product.stock += item.quantity
             product.save()
 
             item.cancel()
+
+            send_order_status_email.delay(
+                order.user.email,
+                item.product.name,
+                item.product.vendor.name,
+                item.status,
+            )
 
         return Response({"message": "Order cancelled"})
 
@@ -159,7 +175,19 @@ class UpdateOrderItemStatusView(APIView):
             item.status = new_status
             item.save()
 
-            return Response({"message": "Status updated", "status": item.status})
+            send_order_status_email.delay(
+                item.order.user.email,
+                item.product.name,
+                item.product.vendor.name,
+                item.status,
+            )
+
+            return Response(
+                {
+                    "message": "Status updated",
+                    "status": item.status,
+                }
+            )
 
         if item.order.user == user:
             if (
@@ -171,6 +199,13 @@ class UpdateOrderItemStatusView(APIView):
                 product.save()
 
                 item.cancel()
+
+                send_order_status_email.delay(
+                    item.order.user.email,
+                    item.product.name,
+                    item.product.vendor.name,
+                    item.status,
+                )
 
                 return Response({"message": "Item cancelled", "status": item.status})
 
@@ -199,6 +234,13 @@ class UpdateOrderItemStatusView(APIView):
 
             else:
                 return Response({"detail": "Invalid status transition"}, status=400)
+
+            send_order_status_email.delay(
+                item.order.user.email,
+                item.product.name,
+                item.product.vendor.name,
+                item.status,
+            )
 
             return Response({"message": "Status updated", "status": item.status})
 
