@@ -32,7 +32,7 @@ SECRET_KEY = env("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("DEBUG")
 
-ALLOWED_HOSTS = ["13.60.15.85", "localhost"]
+ALLOWED_HOSTS = ["13.60.15.85", "localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -60,10 +60,11 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
     "paytechuz.integrations.django",
+    "drf_spectacular",
 ]
 
 MIDDLEWARE = [
-    'apps.core.middleware.GlobalExceptionMiddleware',
+    "apps.core.middleware.GlobalExceptionMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -143,7 +144,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = "static/"
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -167,6 +168,7 @@ REST_FRAMEWORK = {
         "anon": "100/day",
         "user": "1000/day",
     },
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 SIMPLE_JWT = {
@@ -215,8 +217,8 @@ EMAIL_HOST_USER = env("EMAIL_HOST_USER")
 EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-CELERY_BROKER_URL = 'redis://redis:6379/0'
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
@@ -225,43 +227,41 @@ CELERY_TIMEZONE = "Asia/Tashkent"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-
     "formatters": {
         "standard": {
-            "format": (
-                "[{asctime}] "
-                "{levelname} "
-                "{name} "
-                "{message}"
-            ),
+            "format": ("[{asctime}] {levelname} {name} {message}"),
             "style": "{",
         },
     },
-
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "standard",
         },
-
         "file": {
             "class": "logging.FileHandler",
             "filename": "logs/app.log",
             "formatter": "standard",
         },
     },
-
     "loggers": {
         "django": {
             "handlers": ["console", "file"],
             "level": "INFO",
             "propagate": True,
         },
-
         "apps": {
             "handlers": ["console", "file"],
             "level": "INFO",
             "propagate": True,
         },
     },
+}
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "My API",
+    "DESCRIPTION": "Backend API documentation",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SECURITY": [{"BearerAuth": []}],
 }

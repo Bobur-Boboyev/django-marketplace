@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class GlobalExceptionMiddleware:
-
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -18,7 +17,6 @@ class GlobalExceptionMiddleware:
             return response
 
         except Exception as e:
-
             logger.exception(str(e))
 
             return JsonResponse(
