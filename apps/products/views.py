@@ -3,11 +3,13 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
+from drf_spectacular.utils import extend_schema
 
 from .models import Product
 from .serializer import ProductSerializer, ProductImageUploadSerializer
 from .permissions import IsVendorOwner
 from .filters import filter_products
+from apps.reviews.serializers import ReviewSerializer
 
 
 class ProductViewSet(ModelViewSet):
@@ -78,6 +80,7 @@ class ProductViewSet(ModelViewSet):
 
         return Response(serializer.data)
 
+    @extend_schema(request=ProductImageUploadSerializer)
     @action(detail=True, methods=["post"])
     def upload_image(self, request, slug=None):
         product = self.get_object()
@@ -121,6 +124,25 @@ class ProductViewSet(ModelViewSet):
         image.delete()
 
         return Response({"message": "Image deleted"}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=["get"])
+    def reviews(self, request, slug=None):
+        product = self.get_object()
+
+        reviews = product.reviews.all()
+
+        serializer = ReviewSerializer(reviews, many=True, context={"request": request})
+
+        return Response(
+            {
+                "success": True,
+                "product": product.name,
+                "average_rating": product.average_rating,
+                "count": product.reviews_count,
+                "results": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
 
 class AdminProductViewSet(ReadOnlyModelViewSet):

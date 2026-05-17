@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from django.db.models import Sum
-
+from drf_spectacular.utils import extend_schema
 from paytechuz.gateways.payme import PaymeGateway
 
 from .serializers import (
@@ -154,6 +154,7 @@ class VendorSalesView(APIView):
 class UpdateOrderItemStatusView(APIView):
     permission_classes = [IsAuthenticated]
 
+    @extend_schema(request=UpdateOrderItemStatusSerializer)
     def patch(self, request, item_id):
         serializer = UpdateOrderItemStatusSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

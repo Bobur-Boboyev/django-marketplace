@@ -1,10 +1,13 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_spectacular.utils import extend_schema
 
 from apps.wishlist.models import Wishlist
 from apps.wishlist.serializers import WishlistSerializer
+from apps.products.models import Product
 
 
 class WishlistView(APIView):
@@ -17,8 +20,14 @@ class WishlistView(APIView):
 
         return Response(serializer.data)
 
+    @extend_schema(
+        request=WishlistSerializer,
+        responses={200: None},
+    )
     def post(self, request):
         product_id = request.data.get("product")
+
+        product = get_object_or_404(Product, id=product_id)
 
         wishlist_item, created = Wishlist.objects.get_or_create(
             user=request.user, product_id=product_id

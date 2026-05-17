@@ -16,7 +16,13 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = "__all__"
-        read_only_fields = ["status", "rejection_reason", "slug"]
+        read_only_fields = [
+            "status",
+            "rejection_reason",
+            "slug",
+            "average_rating",
+            "reviews_count",
+        ]
 
     def create(self, validated_data):
         base_slug = slugify(validated_data["name"])

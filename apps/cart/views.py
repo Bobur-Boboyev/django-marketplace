@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from drf_spectacular.utils import extend_schema
 
 from apps.products.models import Product
 from .models import CartItem
@@ -14,6 +15,9 @@ from .serializers import (
 )
 
 
+@extend_schema(
+    request=AddToCartSerializer,
+)
 class AddToCartView(APIView):
     def post(self, request):
         serializer = AddToCartSerializer(data=request.data)
@@ -37,6 +41,9 @@ class AddToCartView(APIView):
         return Response({"message": "Added to cart"}, status=status.HTTP_200_OK)
 
 
+@extend_schema(
+    request=RemoveFromCartSerializer,
+)
 class RemoveFromCartView(APIView):
     def post(self, request):
         serializer = RemoveFromCartSerializer(data=request.data)
@@ -59,6 +66,9 @@ class RemoveFromCartView(APIView):
         return Response({"message": "Removed from cart"}, status=status.HTTP_200_OK)
 
 
+@extend_schema(
+    request=UpdateCartQuantitySerializer,
+)
 class UpdateCartQuantityView(APIView):
     def patch(self, request):
         serializer = UpdateCartQuantitySerializer(data=request.data)

@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
+from drf_spectacular.utils import extend_schema
 
 from apps.users.serializer import UserSerializer
 from apps.users.models import User
@@ -23,6 +24,7 @@ class LogoutView(APIView):
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(request=UserSerializer)
 @api_view(["POST"])
 @permission_classes([AllowAny])
 def register_user(request):
@@ -44,6 +46,7 @@ def register_user(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+@extend_schema(request=UserSerializer)
 @api_view(["GET", "PUT", "PATCH", "DELETE"])
 @permission_classes([IsAuthenticated])
 def user_profile(request):
