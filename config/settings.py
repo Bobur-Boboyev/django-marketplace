@@ -270,3 +270,7 @@ SPECTACULAR_SETTINGS = {
     "SERVE_INCLUDE_SCHEMA": False,
     "SECURITY": [{"BearerAuth": []}],
 }
+
+
+QDRANT_HOST = "qdrant"
+QDRANT_PORT = 6333
