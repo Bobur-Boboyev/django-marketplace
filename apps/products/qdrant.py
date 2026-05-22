@@ -4,7 +4,7 @@ from qdrant_client.models import VectorParams
 
 
 client = QdrantClient(
-    host="qdrant",
+    host="localhost",
     port=6333
 )
 

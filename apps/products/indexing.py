@@ -10,7 +10,7 @@ def index_products():
     for product in products:
 
         text = f"""
-        {product.title}
+        {product.name}
         {product.description}
         {product.category}
         """
@@ -21,7 +21,7 @@ def index_products():
             "id": product.id,
             "vector": vector,
             "payload": {
-                "title": product.title
+                "name": product.name
             }
         })
 
