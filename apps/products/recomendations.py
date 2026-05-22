@@ -8,21 +8,24 @@ from django.core.exceptions import ObjectDoesNotExist
 def similar_products(product_id):
     try:
         product = Product.objects.get(id=product_id)
-    except ObjectDoesNotExist:
+    except Product.DoesNotExist:
         return []
 
-    text = f"""
-    {product.name}
-    {product.description}
-    {product.category}
-    """
+    stored = client.retrieve(
+        collection_name="products",
+        ids=[product.id]
+    )
 
-    vector = create_embedding(text)
+    if not stored:
+        return []
+
+    vector = stored[0].vector
 
     results = client.query_points(
         collection_name="products",
         query=vector,
-        limit=5 
+        limit=6
     )
+    results = [r for r in results if r.id != product.id]
 
     return results

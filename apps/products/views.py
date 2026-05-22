@@ -1,4 +1,5 @@
 from rest_framework.viewsets import ModelViewSet, ReadOnlyModelViewSet
+from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework import status
@@ -10,6 +11,8 @@ from .serializer import ProductSerializer, ProductImageUploadSerializer
 from .permissions import IsVendorOwner
 from .filters import filter_products
 from apps.reviews.serializers import ReviewSerializer
+from .recomendations import similar_products
+
 
 
 class ProductViewSet(ModelViewSet):
