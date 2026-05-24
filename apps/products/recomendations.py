@@ -39,9 +39,9 @@ def recommend_for_user(user):
     if not user_vector:
         return []
 
-    results = client.search(
+    results = client.query_points(
         collection_name="products",
-        query_vector=user_vector,
+        query=user_vector,
         limit=10
     )
     results = [Product.objects.get(id=r.id) for r in results]
