@@ -3,6 +3,8 @@ from .embedding import create_embedding
 from .qdrant import client
 from django.core.exceptions import ObjectDoesNotExist
 
+from apps.users.embedding import build_user_vector
+
 
 
 def similar_products(product_id):
@@ -27,5 +29,21 @@ def similar_products(product_id):
         limit=6
     )
     results = [Product.objects.get(id=r.id) for r in results if r.id != product.id]
+
+    return results
+
+
+def recommend_for_user(user):
+    user_vector = build_user_vector(user)
+
+    if not user_vector:
+        return []
+
+    results = client.search(
+        collection_name="products",
+        query_vector=user_vector,
+        limit=10
+    )
+    results = [Product.objects.get(id=r.id) for r in results]
 
     return results
