@@ -1,18 +1,6 @@
-from sentence_transformers import SentenceTransformer
 import numpy as np
-
-from apps.events.models import UserEvent
-
-
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
-
-
-def create_embedding(text):
-    vector = model.encode(text)
-
-    return vector.tolist()
+from events.models import UserEvent
+from products.embedding import create_embedding
 
 
 def build_user_vector(user):

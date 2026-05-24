@@ -10,9 +10,7 @@ def index_products():
     for product in products:
 
         text = f"""
-        {product.name}
-        {product.description}
-        {product.category}
+        {product.name} {product.description}
         """
 
         vector = create_embedding(text)
