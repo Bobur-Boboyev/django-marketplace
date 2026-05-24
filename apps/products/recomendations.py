@@ -26,6 +26,6 @@ def similar_products(product_id):
         query=vector,
         limit=6
     )
-    results = [r for r in results if r.id != product.id]
+    results = [Product.objects.get(id=r.id) for r in results if r.id != product.id]
 
     return results

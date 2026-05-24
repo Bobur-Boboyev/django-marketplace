@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.wallet",
     "apps.wishlist",
+    "apps.events",
     "rest_framework",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",

@@ -6,6 +6,8 @@ from django.contrib.auth.models import (
 from django.db import models
 from django.utils import timezone
 
+from apps.products.models import Product
+
 
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
@@ -54,3 +56,4 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def is_customer(self):
         return not self.is_vendor
+    

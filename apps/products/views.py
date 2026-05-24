@@ -146,6 +146,22 @@ class ProductViewSet(ModelViewSet):
             },
             status=status.HTTP_200_OK,
         )
+    
+    @action(detail=False, methods=["get"], url_path="similar")
+    def similar(self, request):
+        product_id = request.query_params.get("product_id")
+
+        if not product_id:
+            return Response(
+                {"detail": "product_id query param is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        results = similar_products(product_id)
+
+        serializer = ProductSerializer(results, many=True, context={"request": request})
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class AdminProductViewSet(ReadOnlyModelViewSet):
