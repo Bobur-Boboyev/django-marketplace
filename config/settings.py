@@ -230,6 +230,13 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 CELERY_TIMEZONE = "Asia/Tashkent"
 
+CELERY_BEAT_SCHEDULE = {
+    "recompute-popularity": {
+        "task": "recommendations.tasks.recompute_popularity",
+        "schedule": 3600,
+    }
+}
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

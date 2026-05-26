@@ -1,6 +1,7 @@
 import numpy as np
 
 from celery import shared_task
+from django.db import models
 
 from events.models import UserEvent
 from apps.users.models import UserVector
@@ -42,7 +43,9 @@ def build_user_vector_task(user_id):
 
 @shared_task
 def recompute_popularity():
-    products = Product.objects.all()
+    products = Product.objects.annotate(
+        popularity_score=models.Count("events")
+    )
 
     for product in products:
         score = UserEvent.objects.filter(

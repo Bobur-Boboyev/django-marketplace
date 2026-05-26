@@ -1,4 +1,7 @@
+from datetime import timezone
 import json
+
+from django.db import models
 
 from apps.products.utils import recency_score
 from apps.users.models import UserVector
@@ -79,3 +82,10 @@ def rank_results(results):
 
     return ranked
 
+
+def trending_products():
+    since = timezone.now() - timezone.timedelta(hours=7)
+
+    return Product.objects.filter(events__created_at__gte=since).annotate(
+        score=models.Count("events")
+    ).order_by("-popularity_score")
