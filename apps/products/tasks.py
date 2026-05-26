@@ -1,10 +1,16 @@
 import numpy as np
+
+from celery import shared_task
+
 from events.models import UserEvent
+from apps.users.models import UserVector
+
 from products.embedding import create_embedding
 
 
-def build_user_vector(user):
-    events = UserEvent.objects.filter(user=user)
+@shared_task
+def build_user_vector_task(user_id):
+    events = UserEvent.objects.filter(user_id=user_id).select_related("product")
 
     vectors = []
     weights = []
@@ -26,6 +32,8 @@ def build_user_vector(user):
             weights.append(10)
 
     if not vectors:
-        return None
+        return
 
-    return np.average(vectors, axis=0, weights=weights).tolist()
+    user_vector, created = UserVector.objects.get_or_create(user_id=user_id)
+    user_vector.vector = np.average(vectors, axis=0, weights=weights).tolist()
+    user_vector.save()

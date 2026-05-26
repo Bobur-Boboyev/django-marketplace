@@ -1,11 +1,12 @@
 import json
 
+from apps.users.models import UserVector
+
 from .models import Product
 from .embedding import create_embedding
 from .qdrant import client
 from .redis import redis_client
-
-from apps.users.embedding import build_user_vector
+from .embedding import build_user_vector
 
 CACHE_TTL = 300
 
@@ -41,14 +42,14 @@ def recommend_for_user(user):
     if cached:
         return json.loads(cached)
 
-    user_vector = build_user_vector(user)
+    user_vector = UserVector.objects.filter(user=user).first()
 
     if not user_vector:
         return []
 
     results = client.query_points(
         collection_name="products",
-        query=user_vector,
+        query=user_vector.vector,
         limit=10
     )
     results = [Product.objects.get(id=r.id) for r in results]

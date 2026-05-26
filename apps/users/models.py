@@ -57,3 +57,11 @@ class User(AbstractBaseUser, PermissionsMixin):
     def is_customer(self):
         return not self.is_vendor
     
+
+class UserVector(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+    vector = models.JSONField()
+    updated_at = models.DateTimeField(auto_now=True)
