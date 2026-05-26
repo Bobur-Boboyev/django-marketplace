@@ -3,13 +3,19 @@ import numpy as np
 
 from apps.events.models import UserEvent
 
+_model = None
 
-model = SentenceTransformer(
-    "all-MiniLM-L6-v2"
-)
 
+def get_model():
+    global _model
+
+    if _model is None:
+        _model = SentenceTransformer("all-MiniLM-L6-v2")
+
+    return _model
 
 def create_embedding(text):
+    model = get_model()
     vector = model.encode(text)
 
     return vector.tolist()
