@@ -8,10 +8,13 @@ client = QdrantClient(
     port=6333
 )
 
-client.recreate_collection(
-    collection_name="products",
-    vectors_config=VectorParams(
-        size=384,
-        distance=Distance.COSINE
-    )
-)
+COLLECTION_NAME = "products"
+
+
+def init_qdrant():
+    collections = client.get_collections().collections
+    if COLLECTION_NAME not in [c.name for c in collections]:
+        client.create_collection(
+            collection_name=COLLECTION_NAME,
+            vectors_config=VectorParams(size=384, distance=Distance.COSINE)
+        )
