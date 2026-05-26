@@ -4,8 +4,9 @@ from celery import shared_task
 
 from events.models import UserEvent
 from apps.users.models import UserVector
+from .models import Product
 
-from products.embedding import create_embedding
+from .embedding import create_embedding
 
 
 @shared_task
@@ -37,3 +38,17 @@ def build_user_vector_task(user_id):
     user_vector, created = UserVector.objects.get_or_create(user_id=user_id)
     user_vector.vector = np.average(vectors, axis=0, weights=weights).tolist()
     user_vector.save()
+
+
+@shared_task
+def recompute_popularity():
+    products = Product.objects.all()
+
+    for product in products:
+        score = UserEvent.objects.filter(
+            product=product
+        ).count()
+
+        product.popularity_score = score
+
+        product.save()

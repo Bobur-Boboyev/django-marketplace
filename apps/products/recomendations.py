@@ -1,5 +1,6 @@
 import json
 
+from apps.products.utils import recency_score
 from apps.users.models import UserVector
 
 from .models import Product
@@ -50,10 +51,31 @@ def recommend_for_user(user):
     results = client.query_points(
         collection_name="products",
         query=user_vector.vector,
-        limit=10
+        limit=50
     )
-    results = [Product.objects.get(id=r.id) for r in results]
+    ranked = rank_results(results)
+    results = [product for score, product in ranked[:20]]
 
     redis_client.setex(cache_key, CACHE_TTL, json.dumps([r.id for r in results]))
 
     return results
+
+
+def rank_results(results):
+    ranked = []
+
+    for r in results:
+        product = Product.objects.get(id=r.id)
+
+        similarity_score = r.score
+        popularity_score = product.popularity_score
+        recency = recency_score(product)
+
+        final_score = similarity_score * 0.5 + popularity_score * 0.3 + recency * 0.2
+
+        ranked.append((final_score, product))
+
+    ranked.sort(key=lambda x: x[0], reverse=True)
+
+    return ranked
+
