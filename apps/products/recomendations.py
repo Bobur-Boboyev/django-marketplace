@@ -1,7 +1,7 @@
 from datetime import timezone
 import json
 
-from django.db import models
+from django.db.models import Case, When, Count
 
 from apps.products.utils import recency_score
 from apps.users.models import UserVector
@@ -44,7 +44,10 @@ def recommend_for_user(user):
     cache_key = f"user_recommendations:{user.id}"
     cached = redis_client.get(cache_key)
     if cached:
-        return json.loads(cached)
+        product_ids = json.loads(cached)
+
+        preserved_order = Case(*[When(id=pid, then=pos) for pos, pid in enumerate(product_ids)])
+        return list(Product.objects.filter(id__in=product_ids).order_by(preserved_order))
 
     user_vector = UserVector.objects.filter(user=user).first()
 
@@ -87,5 +90,5 @@ def trending_products():
     since = timezone.now() - timezone.timedelta(hours=7)
 
     return Product.objects.filter(events__created_at__gte=since).annotate(
-        score=models.Count("events")
+        score=Count("events")
     ).order_by("-popularity_score")

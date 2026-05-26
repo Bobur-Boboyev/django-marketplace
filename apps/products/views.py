@@ -11,7 +11,7 @@ from .serializer import ProductSerializer, ProductImageUploadSerializer
 from .permissions import IsVendorOwner
 from .filters import filter_products
 from apps.reviews.serializers import ReviewSerializer
-from .recomendations import similar_products, recommend_for_user
+from .recomendations import similar_products, recommend_for_user, trending_products, rank_results
 
 
 
@@ -217,13 +217,15 @@ class AdminProductViewSet(ReadOnlyModelViewSet):
 
 
 class RecommendationAPIView(APIView):
-    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         user = request.user
 
-        products = recommend_for_user(user)
-
+        if not user.is_authenticated:
+            products = trending_products()
+        else:
+            products = recommend_for_user(user)
+        
         serializer = ProductSerializer(products, many=True, context={"request": request})
-
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
