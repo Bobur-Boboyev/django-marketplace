@@ -8,6 +8,7 @@ from apps.users.models import UserVector
 from .models import Product
 
 from .embedding import create_embedding
+from .qdrant import client
 
 
 @shared_task
@@ -55,3 +56,25 @@ def recompute_popularity():
         product.popularity_score = score
 
         product.save()
+
+
+@shared_task
+def index_product_to_qdrant(product_id):
+    product = Product.objects.get(id=product_id)
+    text = f"{product.name} {product.description}"
+
+    vector = create_embedding(text)
+
+    client.upsert(
+        collection_name="products",
+        points=[
+            {
+                "id": product.id,
+                "vector": vector,
+                "payload": {
+                    "name": product.name,
+                    "category": product.category
+                }
+            }
+        ]
+    )

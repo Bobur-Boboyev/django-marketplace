@@ -225,12 +225,14 @@ class RecommendationAPIView(APIView):
 
         if not user.is_authenticated:
             products = trending_products()
+        elif user.is_authenticated and not hasattr(user, "vector"):
+             products = trending_products()
         else:
             products = recommend_for_user(user)
         
         paginator = RecommendationPagination()
         page = paginator.paginate_queryset(products, request)
         serializer = ProductSerializer(page, many=True, context={"request": request})
-        
+
         return paginator.get_paginated_response(serializer.data)
     
