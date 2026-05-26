@@ -43,35 +43,61 @@ def similar_products(product_id):
 def recommend_for_user(user):
     cache_key = f"user_recommendations:{user.id}"
     cached = redis_client.get(cache_key)
+
     if cached:
         product_ids = json.loads(cached)
 
-        preserved_order = Case(*[When(id=pid, then=pos) for pos, pid in enumerate(product_ids)])
-        return list(Product.objects.filter(id__in=product_ids).order_by(preserved_order))
+        products = Product.objects.filter(id__in=product_ids)
 
+        product_map = {p.id: p for p in products}
+
+        ordered_products = [
+            product_map[pid]
+            for pid in product_ids
+            if pid in product_map
+        ]
+
+        return ordered_products
+    
     user_vector = UserVector.objects.filter(user=user).first()
-
+    
     if not user_vector:
-        return []
+        return trending_products()
 
     results = client.query_points(
         collection_name="products",
         query=user_vector.vector,
         limit=50
     )
-    ranked = rank_results(results)
-    results = [product for score, product in ranked[:20]]
+    product_ids = [r.id for r in results]
+    products = Product.objects.filter(id__in=product_ids)
+    product_map = {p.id: p for p in products}
 
-    redis_client.setex(cache_key, CACHE_TTL, json.dumps([r.id for r in results]))
+    ranked = rank_results(results, product_map)
 
-    return results
+    top_ranked = ranked[:20]
+
+    final_product_ids = [p.id for score, p in top_ranked]
+
+    ordered_products = [
+        product_map[pid]
+        for pid in final_product_ids
+        if pid in product_map
+    ]
+
+    redis_client.setex(cache_key, CACHE_TTL, json.dumps(final_product_ids))
+
+    return ordered_products
 
 
-def rank_results(results):
+def rank_results(results, product_map):
     ranked = []
 
     for r in results:
-        product = Product.objects.get(id=r.id)
+        product = product_map.get(r.id)
+
+        if not product:
+            continue
 
         similarity_score = r.score
         popularity_score = product.popularity_score

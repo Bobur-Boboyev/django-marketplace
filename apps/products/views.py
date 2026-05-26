@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.decorators import action
 from drf_spectacular.utils import extend_schema
 
+from apps.products.pagination import RecommendationPagination
+
 from .models import Product
 from .serializer import ProductSerializer, ProductImageUploadSerializer
 from .permissions import IsVendorOwner
@@ -226,6 +228,9 @@ class RecommendationAPIView(APIView):
         else:
             products = recommend_for_user(user)
         
-        serializer = ProductSerializer(products, many=True, context={"request": request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = RecommendationPagination()
+        page = paginator.paginate_queryset(products, request)
+        serializer = ProductSerializer(page, many=True, context={"request": request})
+        
+        return paginator.get_paginated_response(serializer.data)
     
